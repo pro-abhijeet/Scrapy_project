@@ -14,7 +14,7 @@ class qspider(scrapy.Spider):
     start_urls = ["https://www.xebiaacademyglobal.com/sitemap"]
 
     def parse(self, response):
-        for href in response.xpath("//li[@class='course-li course-li-top highlight']//li[@class='open-menu']//a/@href"):
+        for href in response.xpath("//li[@class='course-li course-li-top highlight']//ul//a/@href"):
             url = response.urljoin(href.extract())
             yield scrapy.Request(url, callback = self.parse_dir_contents)
 
