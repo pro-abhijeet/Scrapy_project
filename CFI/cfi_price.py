@@ -34,9 +34,11 @@ class MyprojectSpider(scrapy.Spider):
 
             sub_type = sub_type.strip()
 
+            price = regular_price
 
             yield {
                 'regular_price': regular_price,
+                'price': price,
                 'currency': currency,
                 'subscription_type': sub_type
             }
