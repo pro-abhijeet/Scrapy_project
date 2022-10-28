@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from locale import currency
 import datetime
 import scrapy
 import re
@@ -72,14 +71,14 @@ class MyprojectSpider(scrapy.Spider):
                 regular_price = price[0]
                 sale_price = price[1]
             else:
-                princingtype = "free"
+                pricingtype = "Free"
 
             btype = details[0].text.strip().split(',')[1].strip()
             if btype.lower() == "weekend":
                 # bat = "Weekend (Sat - Sun)"
                 batch_type = "1"
             elif btype.lower() == "weekday":
-                # bat = "Weekend (Mon - Fri)"
+                # bat = "Weekday (Mon - Fri)"
                 batch_type = "2"
 
             btimezone = "Indian Standard Time"
@@ -100,6 +99,7 @@ class MyprojectSpider(scrapy.Spider):
             end_time = datetime.datetime.strptime(end_time, "%I:%M %p")
             end_time = datetime.datetime.strftime(end_time, "%H:%M")
             end_time = end_time+":00"
+
 
             additional_batches.append(  {
                         'batch_start_date':stdate,
