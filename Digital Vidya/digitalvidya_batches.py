@@ -1,5 +1,3 @@
-from tracemalloc import start
-from bs4 import BeautifulSoup
 from datetime import datetime
 import scrapy
 import re
