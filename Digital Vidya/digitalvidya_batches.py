@@ -26,23 +26,27 @@ class MyprojectSpider(scrapy.Spider):
     def batches(self, response):
 
         batch_date = response.xpath('//table[@style="border-collapse: collapse; width: 100%;"]//tbody//tr//td[1]/text() | //span[text()="Dates"]/following::div[@class="et_pb_blurb_description"][1]/p/text() | //div[@class="lp-element lp-pom-box detailbox"][1]//p[1]/span/text()').extract()
+        try:
+            batch_date.remove('\xa0')
+        except:
+            pass
+
         timings = response.xpath('//table[@style="border-collapse: collapse; width: 100%;"]//tbody//tr//td[2]/text() | //span[text()="Timings"]/following::div[@class="et_pb_blurb_description"][1]/p/text() | //div[@id="discount"]/div[2]/div[2]//div[@class="et_pb_blurb_description"]//p/text()').extract()
         if timings == []:
             timings.append('')
+
         batch_price = response.xpath('//span[text()="Course Fee"]/following::div[@class="et_pb_blurb_description"][1]/p/text() | //div//h4/span[contains(text(), "INR")]//text() | //h4/span[text()="Course Fee"]//following::div[1]/text() | //h4[text()="Course Fee"]/following::h3[1]').extract()
 
         additional_batches = list()
 
         for batch, time, price in zip(batch_date, timings, batch_price):
 
-            if response.url == "https://course.digitalvidya.com/digital-marketing-leadership-program/":
-                print(batch, time, price)
-
-
             batch = batch.replace("\xa0", '')
             batch = batch.replace("–", '-')
-
+            
+            
             year = re.findall("\d\d\d\d", batch)[0]
+
             dates = batch.split('-')
             
             start_date = dates[0].split(',')[0].strip()
@@ -141,4 +145,4 @@ class MyprojectSpider(scrapy.Spider):
 
             
 
-            yield {"additional_batches": additional_batches}
+            yield {"regular_price": regular_price, "additional_batches": additional_batches}

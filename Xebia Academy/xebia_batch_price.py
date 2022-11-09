@@ -113,4 +113,8 @@ class MyprojectSpider(scrapy.Spider):
                         'sale_price': sale_price
                     }   )
 
-        yield {"additional_batches": additional_batches}
+        yield {
+            "regular_price": regular_price,
+            "price": sale_price,
+            "additional_batches": additional_batches
+            }

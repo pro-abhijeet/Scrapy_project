@@ -1,5 +1,4 @@
-from datetime import datetime
-from locale import currency
+
 import scrapy
 import re
 
@@ -12,7 +11,7 @@ class MyprojectSpider(scrapy.Spider):
 
     def start_requests(self):
 
-        link = 'https://imaginxp.com/courses/ui-design-course/'
+        link = 'https://imaginxp.com/courses/supply-chain-management-course/'
 
         yield scrapy.Request(url=link, callback=self.parse)
 
@@ -25,17 +24,20 @@ class MyprojectSpider(scrapy.Spider):
 
         sale_price = response.xpath("//div[@class='priceBlock']//ins/text()").get()
 
-        if regular_price == '':
+        if regular_price == None:
             regular_price = sale_price
 
 
         if '₹' in regular_price:
             currency = 'INR'
 
-        regular_price = re.sub('[^0-9]', '', regular_price)
-        sale_price = re.sub('[^0-9]', '', sale_price)
+        regular_price = re.sub('\..*|[^0-9]', '', regular_price)
+        sale_price = re.sub('\..*|[^0-9]', '', sale_price)
 
-        print(regular_price)
-        print(sale_price)
+        yield {
+            'regular_price': regular_price,
+            'price': sale_price,
+            'currency': currency
+        }
 
         
