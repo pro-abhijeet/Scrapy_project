@@ -135,6 +135,9 @@ class MyprojectSpider(scrapy.Spider):
             regular_price = re.findall("\d+,\d+", price)[0]
             
 
+
+            # batch_regular_price
+            # batch_sale_price
             additional_batches.append(  {
                         'batch_start_date':start_date,
                         'batch_end_date':end_date,

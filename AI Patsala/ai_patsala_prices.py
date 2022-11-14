@@ -14,7 +14,7 @@ class CareerSpider(scrapy.Spider):
 
         online_instructor_led_retail_price = response.xpath('//div[@class="ant-col price"]/text()').extract()[3]
         online_instructor_led_discounted_price = response.xpath('//div[@class="ant-col discount_price"]/text()').extract()[3]
-        skill = response.xpath('//h3[@class="ant-typography course_overview_skill_item"]/text()').extract()
+        skill = response.xpath('//h3[@class="ant-typography course_overview_skill_item"]//text()').extract()
 
         currency = 'INR'
 

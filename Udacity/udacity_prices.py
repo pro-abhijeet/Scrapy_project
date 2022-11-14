@@ -40,6 +40,7 @@ class thirdscrapy(scrapy.Spider):
 
                 actual_upfront_amount = data2["results"][0]["payment_plans"]["upfront_recurring"]["upfront_subtotal_display"].replace("₹","").replace("INR","").replace(",","").strip()
                 #print("actual_upfront_amount- ", actual_upfront_amount)
+                
                 discounted_actual_upfront_amount = data2["results"][0]["payment_plans"]["upfront_recurring"]["upfront_amount"]["payable_amount_display"].replace("₹","").replace("INR","").replace(",","").strip()
                 #print("discounted_actual_upfront_amount- ", discounted_actual_upfront_amount)
 
