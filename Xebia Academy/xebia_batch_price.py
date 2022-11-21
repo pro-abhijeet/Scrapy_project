@@ -31,6 +31,8 @@ class MyprojectSpider(scrapy.Spider):
         batches = data.find_all("div", class_="course-schedule")
         additional_batches = list()
 
+        regular_price = ''
+        sale_price = ''
 
         for i in batches:
 

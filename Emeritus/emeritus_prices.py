@@ -1,44 +1,42 @@
-import scrapy
-import requests
-import re
-from bs4 import BeautifulSoup
 import dateutil.parser as parser
-from datetime import datetime
+import scrapy
+import re
 
 
-class emeritusscrapy(scrapy.Spider):
+class EmiritusSpider(scrapy.Spider):
     name = "emeritus"
+
     start_urls = [
         "https://emeritus.org/explore-topics/"
     ]
 
     def parse(self, response):
 
-        domain_links = response.xpath('//div[@class="portfolio-holder"]//a/@href').extract()
+        all_links = response.xpath("//*[@class='thb-portfolio-link']/@href").extract()
+        #print(len(all_links))
+        for links in all_links:
+            links = links.replace("courses/", "online-")
+            links = re.sub("\/$", "-courses/", links)
+            yield scrapy.Request(links, callback=self.parse_links)
 
-        for i in range(len(domain_links)):
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
-                "Accept-Encoding": "gzip, deflate",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "DNT": "1",
-                "Connection": "close", "Upgrade-Insecure-Requests": "1"
-            }
-            response = requests.get(domain_links[i], headers=headers)
-            soup = BeautifulSoup(response.text, "html.parser")
-            domain_sp_links = [i["href"] for i in soup.find_all("a", class_="nohover", href=True)]
+    def parse_links(self, response):
 
-            try:
-                for j in range(len(domain_sp_links)):
-                    yield scrapy.Request(domain_sp_links[j], callback=self.courses)
-            except:
-                pass
+        all_course_links = response.xpath("//*[@class='row']//*[@class='small-12 medium-6 large-4  columns']//*[contains(@href,'https:')]//@href").extract()
 
-    def courses(self, response):
+        for links in all_course_links:
+            links = re.sub("\?.*", "", links)
+            yield scrapy.Request(links, callback=self.parse_course)
 
+    def parse_course(self, response):
         try:
-            display_price = "".join([i for i in re.findall(r'\d+' ,list(filter(lambda x: x != '', [i.strip() for i in response.xpath('//p[@class="box__price paragraph--large strong margin-bottom-small ignore-screenshot"]/text()').extract()]))[0])])
-            k = [i for i in re.findall(r'\d+' ,list(filter(lambda x: x != '', [i.strip() for i in response.xpath('//p[@class="box__price paragraph--large strong margin-bottom-small ignore-screenshot"]/text()').extract()]))[0])]
-            currency = list(filter(lambda x: x != '', [i.strip() for i in response.xpath('//p[@class="box__price paragraph--large strong margin-bottom-small ignore-screenshot"]/text()').extract()]))[0].split(k[0])[0]
+            # Extracting price by eliminating the empty strings from the list ['', 'US$2,423', '']-->['US$2,423']
+            price_list = list(filter(lambda x: x != '', [i.strip() for i in response.xpath('//p[@class="box__price paragraph--large strong margin-bottom-small ignore-screenshot"]/text()').extract()]))
+            # Extracting the price
+            price_list_num = [i for i in re.findall(r'\d+', price_list[0])]
+            display_price = "".join(price_list_num)
+
+            currency = price_list[0].split(price_list_num[0])[0]
+
         except:
             display_price = ""
             currency = ""
@@ -50,8 +48,8 @@ class emeritusscrapy(scrapy.Spider):
             start_date = ""
 
         yield {
-            "link": response,
-            "start_date": start_date,
-            "display_price": display_price,
-            "currency": currency
-        }
+                "link": response,
+                "start_date": start_date,
+                "display_price": display_price,
+                "currency": currency
+                }
