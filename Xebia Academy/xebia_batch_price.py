@@ -18,7 +18,7 @@ class MyprojectSpider(scrapy.Spider):
 
     def parse(self, response):
 
-        courseurls = response.xpath("//ul[@class='course-map-menu']//li/a/@href").extract()
+        courseurls = response.xpath("//div[@class='menu-box-main']//div/div//a/@href").extract()
         
         for link in courseurls:
 
